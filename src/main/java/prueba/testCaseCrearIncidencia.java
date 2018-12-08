@@ -31,7 +31,7 @@ public class testCaseCrearIncidencia {
     driver.findElement(By.name("listaTiposIncidencia")).click();
     driver.findElement(By.name("textoIncidencia")).click();
     driver.findElement(By.name("textoIncidencia")).clear();
-    driver.findElement(By.name("textoIncidencia")).sendKeys("Hay un error en mi fichaje del día 3 de Diciembre de 2018");
+    driver.findElement(By.name("textoIncidencia")).sendKeys("Hay un error en mi fichaje del dia 3 de Diciembre de 2018");
     driver.findElement(By.name("Aceptar")).click();
   }
 
