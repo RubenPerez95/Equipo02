@@ -1,2 +1,6 @@
 language: java
 jdk: oraclejdk8
+install:
+ - npm install -g selenium-webdriver
+script:
+  - mvn test -B
