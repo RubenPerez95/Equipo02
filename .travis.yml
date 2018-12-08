@@ -1,8 +1,6 @@
 language: java
 jdk: oraclejdk8
-os:
- - linux
 install:
- - npm install newman
+ - npm install -g selenium-webdriver
 script:
-- "node test/pruebas/*.java"
+ - "node test/pruebas/*.java"
