@@ -2,8 +2,8 @@ language: java
 jdk: oraclejdk8
 install:
  - npm install -g selenium-webdriver
- before_script:
-  - node --version
-  - npm --version
+before_script:
+ - node --version
+ - npm --version
 script:
  - "node src/main/java/test/testCaseCrearIncidencia.java"
