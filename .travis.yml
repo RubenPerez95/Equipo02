@@ -3,4 +3,4 @@ jdk: oraclejdk8
 install:
  - npm install -g selenium-webdriver
 script:
- - "node test/testCaseCrearIncidencia.java"
+ - "node src/main/java/test/testCaseCrearIncidencia.java"
