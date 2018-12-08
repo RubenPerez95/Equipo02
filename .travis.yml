@@ -1,8 +1,9 @@
 language: java
 jdk: oraclejdk8
+os:
+ - linux
 install:
  - npm install newman
-
 before_script:
   - node --version
   - npm --version
