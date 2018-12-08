@@ -1,4 +1,12 @@
 language: java
 jdk: oraclejdk8
-script:
-    - "node src/main/java/pruebas/testCaseCrearIncidencia.java"
+install:
+ - npm install newman
+
+before_script:
+  - node --version
+  - npm --version
+  - node_modules/.bin/newman --version
+script: 
+  - mvn test -B
+  - node_modules/.bin/newman run src/main/java/pruebas/testCaseCrearIncidencia.java
