@@ -29,7 +29,7 @@ public class testCaseCrearIncidencia {
 		selenium.select("name=listaTiposIncidencia", "label=Error de fichaje");
 		selenium.click("name=listaTiposIncidencia");
 		selenium.click("name=textoIncidencia");
-		selenium.type("name=textoIncidencia", "Hay un error en mi fichaje del día 3 de Diciembre de 2018");
+		selenium.type("name=textoIncidencia", "Hay un error en mi fichaje del dia 3 de Diciembre de 2018");
 		selenium.click("name=Aceptar");
 	}
 
