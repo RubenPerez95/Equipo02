@@ -1,4 +1,4 @@
-package prueba;
+package Equipo02.PruebaSpring;
 
 import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
@@ -23,15 +23,23 @@ public class testCaseCrearIncidencia {
   }
 
   @Test
-  public void testCaseCrearIncidencia() throws Exception {
+  public void testCrearIncidencia() throws Exception {
     driver.get("https://mantenimientoequipo2.herokuapp.com/login");
     driver.findElement(By.name("crearIncidencia")).click();
+    //Funcionamiento normal de crear una incidencia
     driver.findElement(By.name("listaTiposIncidencia")).click();
-    new Select(driver.findElement(By.name("listaTiposIncidencia"))).selectByVisibleText("Error de fichaje");
+    new Select(driver.findElement(By.name("listaTiposIncidencia"))).selectByVisibleText("Baja médica");
     driver.findElement(By.name("listaTiposIncidencia")).click();
     driver.findElement(By.name("textoIncidencia")).click();
     driver.findElement(By.name("textoIncidencia")).clear();
-    driver.findElement(By.name("textoIncidencia")).sendKeys("Hay un error en mi fichaje del dia 3 de Diciembre de 2018");
+    driver.findElement(By.name("textoIncidencia")).sendKeys("Tengo gripe y fiebre");
+    driver.findElement(By.name("Aceptar")).click();
+    //Funcionamiento cuando intentas añadir una incidencia vacía
+    driver.findElement(By.name("crearIncidencia")).click();
+    driver.findElement(By.name("Aceptar")).click();
+    driver.findElement(By.name("textoIncidencia")).clear();
+    //prueba de que se permiten introducir incidencias solo con espacios
+    driver.findElement(By.name("textoIncidencia")).sendKeys("");
     driver.findElement(By.name("Aceptar")).click();
   }
 
