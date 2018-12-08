@@ -1,4 +1,4 @@
-package test;
+package Equipo02.PruebaSpring;
 
 import com.thoughtworks.selenium.Selenium;
 import org.openqa.selenium.firefox.FirefoxDriver;
