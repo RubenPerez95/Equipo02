@@ -1,79 +1,40 @@
 package test;
 
-import java.util.regex.Pattern;
-import java.util.concurrent.TimeUnit;
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-import org.openqa.selenium.*;
+import com.thoughtworks.selenium.Selenium;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.WebDriver;
+import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import java.util.regex.Pattern;
+import static org.apache.commons.lang3.StringUtils.join;
 
 public class testCaseCrearIncidencia {
-	private WebDriver driver;
-	private String baseUrl;
-	private boolean acceptNextAlert = true;
-	private StringBuffer verificationErrors = new StringBuffer();
+	private Selenium selenium;
 
 	@Before
 	public void setUp() throws Exception {
-		driver = new FirefoxDriver();
-		baseUrl = "https://www.katalon.com/";
-		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		WebDriver driver = new FirefoxDriver();
+		String baseUrl = "https://www.katalon.com/";
+		selenium = new WebDriverBackedSelenium(driver, baseUrl);
 	}
 
 	@Test
 	public void testUntitledTestCase() throws Exception {
-		driver.get("https://mantenimientoequipo2.herokuapp.com/login");
-		driver.findElement(By.name("crearIncidencia")).click();
-		driver.findElement(By.name("listaTiposIncidencia")).click();
-		new Select(driver.findElement(By.name("listaTiposIncidencia"))).selectByVisibleText("Error de fichaje");
-		driver.findElement(By.name("listaTiposIncidencia")).click();
-		driver.findElement(By.name("textoIncidencia")).click();
-		driver.findElement(By.name("textoIncidencia")).clear();
-		driver.findElement(By.name("textoIncidencia")).sendKeys("Hay un error en mi fichaje del dia 3 de Diciembre de 2018");
-		driver.findElement(By.name("Aceptar")).click();
+		selenium.open("https://mantenimientoequipo2.herokuapp.com/login");
+		selenium.click("name=crearIncidencia");
+		selenium.click("name=listaTiposIncidencia");
+		selenium.select("name=listaTiposIncidencia", "label=Error de fichaje");
+		selenium.click("name=listaTiposIncidencia");
+		selenium.click("name=textoIncidencia");
+		selenium.type("name=textoIncidencia", "Hay un error en mi fichaje del día 3 de Diciembre de 2018");
+		selenium.click("name=Aceptar");
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		driver.quit();
-		String verificationErrorString = verificationErrors.toString();
-		if (!"".equals(verificationErrorString)) {
-			fail(verificationErrorString);
-		}
-	}
-
-	private boolean isElementPresent(By by) {
-		try {
-			driver.findElement(by);
-			return true;
-		} catch (NoSuchElementException e) {
-			return false;
-		}
-	}
-
-	private boolean isAlertPresent() {
-		try {
-			driver.switchTo().alert();
-			return true;
-		} catch (NoAlertPresentException e) {
-			return false;
-		}
-	}
-
-	private String closeAlertAndGetItsText() {
-		try {
-			Alert alert = driver.switchTo().alert();
-			String alertText = alert.getText();
-			if (acceptNextAlert) {
-				alert.accept();
-			} else {
-				alert.dismiss();
-			}
-			return alertText;
-		} finally {
-			acceptNextAlert = true;
-		}
+		selenium.stop();
 	}
 }
