@@ -6,4 +6,5 @@ before_script:
  - node --version
  - npm --version
 script:
+  - mvn test -B
  - "node src/main/java/test/testCaseCrearIncidencia.java"
