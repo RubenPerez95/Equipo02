@@ -38,7 +38,7 @@ public class testCaseCrearIncidencia {
 		driver.findElement(By.name("textoIncidencia")).clear();
 		driver.findElement(By.name("textoIncidencia")).sendKeys("Me marcho de vacaciones las semana que viene");
 		driver.findElement(By.name("Aceptar")).click();
-		//Ejemplo de intentar meter una incidencia vacía
+		//Ejemplo de intentar meter una incidencia vacia
 		driver.findElement(By.name("crearIncidencia")).click();
 		driver.findElement(By.name("Aceptar")).click();
 		//Ejemplo de intentar meter una incidencia con espacios y que funciona
