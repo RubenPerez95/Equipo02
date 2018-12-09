@@ -32,11 +32,11 @@ public class testCaseCrearIncidencia {
 		//Ejemplo de funcionamiento correcto
 		driver.findElement(By.name("crearIncidencia")).click();
 		driver.findElement(By.name("listaTiposIncidencia")).click();
-		new Select(driver.findElement(By.name("listaTiposIncidencia"))).selectByVisibleText("Justificación de ausencia");
+		new Select(driver.findElement(By.name("listaTiposIncidencia"))).selectByVisibleText("Vacaciones");
 		driver.findElement(By.name("listaTiposIncidencia")).click();
 		driver.findElement(By.name("textoIncidencia")).click();
 		driver.findElement(By.name("textoIncidencia")).clear();
-		driver.findElement(By.name("textoIncidencia")).sendKeys("Falté al trabajo por tener fiebre");
+		driver.findElement(By.name("textoIncidencia")).sendKeys("Me marcho de vacaciones las semana que viene");
 		driver.findElement(By.name("Aceptar")).click();
 		//Ejemplo de intentar meter una incidencia vacía
 		driver.findElement(By.name("crearIncidencia")).click();

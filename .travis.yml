@@ -1,7 +1,5 @@
 language: java
 jdk: oraclejdk8
-before_install:
- encoding: utf8
 install:
  - npm install -g selenium-webdriver
 script:
