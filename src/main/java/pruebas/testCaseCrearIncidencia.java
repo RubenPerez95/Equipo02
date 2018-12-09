@@ -36,7 +36,7 @@ public class testCaseCrearIncidencia {
 		driver.findElement(By.name("listaTiposIncidencia")).click();
 		driver.findElement(By.name("textoIncidencia")).click();
 		driver.findElement(By.name("textoIncidencia")).clear();
-		driver.findElement(By.name("textoIncidencia")).sendKeys("Falte al trabajo por tener fiebre");
+		driver.findElement(By.name("textoIncidencia")).sendKeys("Falté al trabajo por tener fiebre");
 		driver.findElement(By.name("Aceptar")).click();
 		//Ejemplo de intentar meter una incidencia vacía
 		driver.findElement(By.name("crearIncidencia")).click();
