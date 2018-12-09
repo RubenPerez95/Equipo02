@@ -1,9 +1,7 @@
 language: java
 jdk: oraclejdk8
-global:
-  env:
-    -LANG=en_US.UTF-8
-    -LC_ALL=en_US.UTF-8
+before_install:
+ encoding: utf8
 install:
  - npm install -g selenium-webdriver
 script:
