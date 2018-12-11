@@ -36,14 +36,23 @@ public class testCaseCrearIncidencia {
 		driver.findElement(By.name("listaTiposIncidencia")).click();
 		driver.findElement(By.name("textoIncidencia")).click();
 		driver.findElement(By.name("textoIncidencia")).clear();
-		driver.findElement(By.name("textoIncidencia")).sendKeys("Me marcho de vacaciones las semana que viene");
+		driver.findElement(By.name("textoIncidencia")).sendKeys("Me marcho de vacaciones la semana que viene");
 		driver.findElement(By.name("Aceptar")).click();
 		//Ejemplo de intentar meter una incidencia vacia
 		driver.findElement(By.name("crearIncidencia")).click();
 		driver.findElement(By.name("Aceptar")).click();
 		//Ejemplo de intentar meter una incidencia con espacios y que funciona
 		driver.findElement(By.name("textoIncidencia")).clear();
-		driver.findElement(By.name("textoIncidencia")).sendKeys("");
+		driver.findElement(By.name("textoIncidencia")).sendKeys(" ");
+		driver.findElement(By.name("Aceptar")).click();
+		//Ejemplo intentando meter una incidencia repetida sin resolver y que funciona
+		driver.findElement(By.name("crearIncidencia")).click();
+		driver.findElement(By.name("listaTiposIncidencia")).click();
+		new Select(driver.findElement(By.name("listaTiposIncidencia"))).selectByVisibleText("Vacaciones");
+		driver.findElement(By.name("listaTiposIncidencia")).click();
+		driver.findElement(By.name("textoIncidencia")).click();
+		driver.findElement(By.name("textoIncidencia")).clear();
+		driver.findElement(By.name("textoIncidencia")).sendKeys("Me marcho de vacaciones la semana que viene");
 		driver.findElement(By.name("Aceptar")).click();
 	}
 
