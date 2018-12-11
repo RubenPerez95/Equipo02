@@ -58,7 +58,7 @@
 					</div>
 					<div class="form-inline text-center" style="margin: auto;">
 						<div class="form-group">
-							<input type="submit" class="btnSubmit" value="Acceso" />
+							<input name="acceso" type="submit" class="btnSubmit" value="Acceso" />
 							<span style="color:red"><em>${alerta}</em></span>
 						</div>
 					</div>
