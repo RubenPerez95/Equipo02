@@ -20,7 +20,7 @@ import com.uclm.equipo02.persistencia.UsuarioDaoImplement;
 import cucumber.api.java.en.When;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-public class testModEmpl{
+public class testModEmpl {
 	
 	
 	
@@ -31,7 +31,7 @@ public class testModEmpl{
 	public void precondiciones() throws Throwable {
 		System.setProperty("webdriver.chrome.driver","chromedriver.exe");
 		  driver = new ChromeDriver();
-		
+		  driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 	    driver.get("https://mantenimientoequipo2.herokuapp.com/");
 		Thread.sleep(1000);
 		
@@ -69,7 +69,7 @@ public class testModEmpl{
 		driver.findElement(By.name("txtUsuarioEmail")).sendKeys("rafapx2@gmail.com");
 		driver.findElement(By.name("listaRoles")).sendKeys("Gestor de incidencias");
 		driver.findElement(By.name("Aceptar")).click();
-		
+	
 		assertTrue(us.devolverMail(user).equals("rafapx2@gmail.com")&&us.devolverRol(user).equals("Gestor de incidencias"));
 		
 	}
