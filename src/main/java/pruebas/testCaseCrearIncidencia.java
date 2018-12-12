@@ -21,13 +21,14 @@ public class testCaseCrearIncidencia {
 
 	@Test
 	public void testIncidencias() throws Exception {
+		//Iniciar sesion
 		driver.get("https://mantenimientoequipo2.herokuapp.com/");
 		driver.findElement(By.name("txtUsuarioEmail")).click();
 		driver.findElement(By.name("txtUsuarioEmail")).clear();
 		driver.findElement(By.name("txtUsuarioEmail")).sendKeys("lydia.prado@alu.uclm.es");
 		driver.findElement(By.name("txtUsuarioPassword")).click();
 		driver.findElement(By.name("txtUsuarioPassword")).clear();
-		driver.findElement(By.name("txtUsuarioPassword")).sendKeys("Lydia1234");
+		driver.findElement(By.name("txtUsuarioPassword")).sendKeys("MiContrasena2");
 		driver.findElement(By.id("formlogin")).submit();
 		//Ejemplo de funcionamiento correcto
 		driver.findElement(By.name("crearIncidencia")).click();
