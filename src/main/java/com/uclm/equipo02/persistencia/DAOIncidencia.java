@@ -319,5 +319,23 @@ public class DAOIncidencia{
 		
 		incidencias.deleteOne(new Document("_id", new ObjectId(incidencia.get_id().toString())));
 	}
+	
+	public static List<Document> getIncs() {
+
+
+		List<Document> incidenciasGestor = new ArrayList<Document>();
+		Document documento = new Document();
+		MongoCursor<Document> elementos = getIncidencias().find().iterator();
+
+		while(elementos.hasNext()) {
+			documento = elementos.next();
+			
+
+				incidenciasGestor.add(documento);
+		}
+
+		return incidenciasGestor;
+	}
+	
 
 }

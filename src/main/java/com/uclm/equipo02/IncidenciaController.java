@@ -25,7 +25,7 @@ import com.uclm.equipo02.persistencia.UsuarioDaoImplement;
 
 
 @Controller
-public class IncidenciaController {
+public  class IncidenciaController {
 	
 	private final String fichajes = "fichajes";
 	private final String interfazAdministrador="interfazAdministrador";
@@ -105,12 +105,14 @@ public class IncidenciaController {
 	
 	@RequestMapping(value = "resolverIncidencia", method = RequestMethod.GET)
 	public String resolverIncidencia(HttpServletRequest request, Model model) throws Exception {
+		
 		Usuario usuario;
 		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
 		String texto=request.getParameter("textoGestor");
 		String modo="resolver";
 		
 		String idIncidencia=request.getParameter("idSeleccionada");
+		
 		ObjectId id=new ObjectId(idIncidencia);
 		
 		Incidencia resuelta=incidenciaDao.resolverIncidencia(id,texto);
@@ -120,7 +122,7 @@ public class IncidenciaController {
 		//Creacion de lista de incidencias de nuevo
 		List<Document> listaIncidenciasGestor =incidenciaDao.getIncidenciasGestor();
 		model.addAttribute("listaIncidencias", listaIncidenciasGestor);
-	
+	System.out.println("holka");
 		return "resolverIncidencia";
 	}
 	
