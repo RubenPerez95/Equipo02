@@ -115,7 +115,7 @@ public class HomeController {
 		return usuario_login;
 	}
 
-	//Código nuevo
+	//Codigo nuevo
 	protected String sesionServidor(HttpServletRequest request/*, HttpServletResponse response*/) throws ServletException, IOException {
 	    HttpSession session = request.getSession();
 	    String sessionKey = (String) session.getAttribute("sessionkey");
