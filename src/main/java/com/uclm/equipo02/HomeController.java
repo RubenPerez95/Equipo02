@@ -1,12 +1,16 @@
 package com.uclm.equipo02;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -22,7 +26,7 @@ import com.uclm.equipo02.persistencia.UsuarioDaoImplement;
 
 public class HomeController {
 
-	
+
 	private final String usuario_login = "login";
 	private final String usuario_conect = "usuarioConectado";
 	private final String alert = "alerta";
@@ -32,10 +36,10 @@ public class HomeController {
 	private final String email = "email";
 	private final String rol = "rol";
 	private final String dni = "dni";
-	
-private final String welcome = "welcome";
-	
-	
+
+	private final String welcome = "welcome";
+
+
 
 	UsuarioDaoImplement userDao = new UsuarioDaoImplement();
 
@@ -61,9 +65,9 @@ private final String welcome = "welcome";
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String iniciarSesion(HttpServletRequest request, Model model) throws Exception {
-		//String cadenaUrl = usuarioServ;
 		String email = request.getParameter("txtUsuarioEmail");
 		String password = request.getParameter("txtUsuarioPassword");
+		String sessionHex;
 		if (email.equals("") || password.equals("")) {
 			model.addAttribute(alert, "Por favor rellene los campos");
 			return usuario_login;
@@ -72,30 +76,32 @@ private final String welcome = "welcome";
 		usuario.setEmail(email);
 		usuario.setPassword(password);
 		try {
-		String nombre =  userDao.devolverUser(usuario);
-		usuario.setNombre(nombre);
-		String dni = userDao.devolverDni(usuario);
-		usuario.setDni(dni);
+			String nombre =  userDao.devolverUser(usuario);
+			usuario.setNombre(nombre);
+			String dni = userDao.devolverDni(usuario);
+			usuario.setDni(dni);
 		}catch(Exception e) {
-			
+
 		}
-		if (userDao.login(usuario) && request.getSession().getAttribute(usuario_conect) == null){
+		sessionHex = sesionServidor(request);
+		/*if (userDao.login(usuario) && request.getSession().getAttribute(usuario_conect) == null){*/
+		if(userDao.login(usuario) && sessionHex != null){
 			usuario.setRol(userDao.devolverRol(usuario));
 
 			if(usuario.getRol().equalsIgnoreCase("empleado")) {
-				request.getSession().setAttribute(usuario_conect, usuario);
+				request.getSession().setAttribute("sessionkey", sessionHex);
 				request.setAttribute("nombreUser", usuario);
 				request.setAttribute("mailUser", email);
 				request.setAttribute("dniUser", dni);
 				return "fichajes";
 			}else if (usuario.getRol().equalsIgnoreCase("administrador")){
-				request.getSession().setAttribute(usuario_conect, usuario);
+				request.getSession().setAttribute("sessionkey", sessionHex);
 				request.setAttribute("nombreUser", usuario.getNombre());
 				request.setAttribute("mailUser", email);
 				request.setAttribute("dniUser", dni);
 				return "interfazAdministrador";
 			}else if (usuario.getRol().equalsIgnoreCase("Gestor de incidencias")){
-				request.getSession().setAttribute(usuario_conect, usuario);
+				request.getSession().setAttribute("sessionkey", sessionHex);
 				request.setAttribute("nombreUser", usuario.getNombre());
 				request.setAttribute("mailUser", email);
 				request.setAttribute("dniUser", dni);
@@ -107,8 +113,32 @@ private final String welcome = "welcome";
 			return usuario_login;
 		}
 		return usuario_login;
-}
+	}
 
+	//Código nuevo
+	protected String sesionServidor(HttpServletRequest request/*, HttpServletResponse response*/) throws ServletException, IOException {
+	    HttpSession session = request.getSession();
+	    String sessionKey = (String) session.getAttribute("sessionkey");
+	    String remoteAddr = request.getRemoteAddr();
+	    int remotePort = request.getRemotePort();
+	    String sha256Hex = DigestUtils.sha256Hex(remoteAddr + remotePort);
+	    /*if (sessionKey == null || sessionKey.isEmpty()) {
+	        session.setAttribute("sessionkey", sha256Hex);
+	        // save mapping to memory to track which user attempted
+	       // Application.userSessionMap.put(sha256Hex, remoteAddr + remotePort);
+	    } else */if (!sha256Hex.equals(sessionKey)) {
+	        session.invalidate();
+//	        response.getWriter().append(Application.userSessionMap.get(sessionKey));
+//	        response.getWriter().append(" attempted to hijack session id ").append(request.getRequestedSessionId()); 
+//	        response.getWriter().append("of user ").append(Application.userSessionMap.get(sha256Hex));
+	        return null;
+	    }
+	    //response.getWriter().append("Valid Session\n");
+	    return sha256Hex;
+	}
+	
+	
+	
 	public ModelAndView cambiarVista(String nombreVista) {
 		ModelAndView vista = new ModelAndView(nombreVista);
 		return vista;
