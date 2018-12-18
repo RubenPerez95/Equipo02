@@ -50,18 +50,18 @@ public class UsuarioDaoImplement{
 			bso.append(email, new BsonString(usuario.getEmail()));
 			bso.append(rol, new BsonString(usuario.getRol()));
 			bso.append(dni, new BsonString(usuario.getDni()));
-			
+
 			bso2.append(dni, new BsonString(usuario.getDni()));
 			bso2.append(password, new BsonString(usuario.getPassword()));
 			MongoCollection<Document> usuarios = obtenerUsuarios();
 			usuarios.insertOne(bso);
 			MongoCollection<Document> contrasenas = getContrasenas();
 			contrasenas.insertOne(bso2);
-			
+
 		}else
 			throw new Exception("Cuenta existente");
 	}
-	
+
 	public static MongoCollection<Document> getContrasenas() {
 		MongoBroker broker = MongoBroker.get();
 		MongoCollection<Document> incidencias = broker.getCollection("Contrasenas");
@@ -79,9 +79,9 @@ public class UsuarioDaoImplement{
 		}
 		return true;
 	}
-	
-public Usuario selectNombre(String nombreParam) {
-		
+
+	public Usuario selectNombre(String nombreParam) {
+
 		MongoCollection<Document> usuarios = obtenerUsuarios();
 		Document criterio = new Document();
 		criterio.append(name, new BsonString(nombreParam));
@@ -92,7 +92,7 @@ public Usuario selectNombre(String nombreParam) {
 			return null;
 		}
 		else {
-			
+
 			String nombreUser = usuario.getString(name);
 			String pwdUser = usuario.getString(password);
 			String mailUser = usuario.getString(email);
@@ -101,7 +101,7 @@ public Usuario selectNombre(String nombreParam) {
 			result = new Usuario(nombreUser, pwdUser, mailUser, rolUser,dniUser);
 		}
 		return result;
-}
+	}
 
 	public String devolverRol(Usuario usuario) {
 		MongoCollection<Document> usuarios = obtenerUsuarios();
@@ -146,7 +146,7 @@ public Usuario selectNombre(String nombreParam) {
 
 		}
 		return usuario.getDni();
-		
+
 	}
 
 	//Obtener todos los usuarios
@@ -174,20 +174,20 @@ public Usuario selectNombre(String nombreParam) {
 	}
 
 	//Devuelve los usuarios que son gestores
-public List<String> obtenerGestores() {
-	Document documento = new Document();
-	MongoCursor<Document> elementos = obtenerUsuarios().find().iterator();
-	List<String> retorno=new ArrayList<String>();
-	while(elementos.hasNext()) {
-		documento = elementos.next();
-		if(documento.get("rol").toString().equalsIgnoreCase("Gestor de incidencias")) {
-			String mailGestor = documento.getString("email");
-			retorno.add(mailGestor);
-			
+	public List<String> obtenerGestores() {
+		Document documento = new Document();
+		MongoCursor<Document> elementos = obtenerUsuarios().find().iterator();
+		List<String> retorno=new ArrayList<String>();
+		while(elementos.hasNext()) {
+			documento = elementos.next();
+			if(documento.get("rol").toString().equalsIgnoreCase("Gestor de incidencias")) {
+				String mailGestor = documento.getString("email");
+				retorno.add(mailGestor);
+
+			}
 		}
+		return retorno;
 	}
-	return retorno;
-}
 
 	//Borrar usuario
 	public void delete (Usuario usuario){
@@ -197,7 +197,7 @@ public List<String> obtenerGestores() {
 		bso.append(name, new BsonString(usuario.getNombre()));
 		MongoCollection<Document> usuarios = obtenerUsuarios();
 		usuarios.deleteOne(bso);
-		
+
 		bso2.append(dni, new BsonString(usuario.getDni()));
 		MongoCollection<Document> contrasenas = getContrasenas();
 		contrasenas.deleteMany(bso2);
@@ -240,24 +240,24 @@ public List<String> obtenerGestores() {
 
 
 
-public void updatePwd(Usuario usuario) throws Exception{
-	MongoCollection<Document> usuarios = obtenerUsuarios();
-	MongoCollection<Document> contrasenas = getContrasenas();
-	Document criterio = new Document();
-	criterio.append(name, new BsonString(usuario.getNombre()));
-	FindIterable<Document> resultado=usuarios.find(criterio);
-	Document usuarioBso = resultado.first();
-	Document bso2 = new Document();
-	if (usuarioBso==null)
-		throw new Exception("Fallo la actualizacion de los datos del usuario.");
+	public void updatePwd(Usuario usuario) throws Exception{
+		MongoCollection<Document> usuarios = obtenerUsuarios();
+		MongoCollection<Document> contrasenas = getContrasenas();
+		Document criterio = new Document();
+		criterio.append(name, new BsonString(usuario.getNombre()));
+		FindIterable<Document> resultado=usuarios.find(criterio);
+		Document usuarioBso = resultado.first();
+		Document bso2 = new Document();
+		if (usuarioBso==null)
+			throw new Exception("Fallo la actualizacion de los datos del usuario.");
 
-	bso2.append(dni, new BsonString(usuario.getDni()));
-	bso2.append(password, Utilidades.encrypt(usuario.getPassword()));
-	contrasenas.insertOne(bso2);
-	
-	Document actualizacion= new Document("$set", new Document(password, new BsonString(Utilidades.encrypt(usuario.getPassword()))));
-	usuarios.findOneAndUpdate(usuarioBso, actualizacion);
-}
+		bso2.append(dni, new BsonString(usuario.getDni()));
+		bso2.append(password, Utilidades.encrypt(usuario.getPassword()));
+		contrasenas.insertOne(bso2);
+
+		Document actualizacion= new Document("$set", new Document(password, new BsonString(Utilidades.encrypt(usuario.getPassword()))));
+		usuarios.findOneAndUpdate(usuarioBso, actualizacion);
+	}
 
 	public void updateRol(Usuario usuario, String rolNuevo) throws Exception{
 		MongoCollection<Document> usuarios = obtenerUsuarios();
@@ -282,7 +282,7 @@ public void updatePwd(Usuario usuario) throws Exception{
 
 		Document actualizacion= new Document("$set", new Document(name, new BsonString(nombreNuevo)));
 		usuarios.findOneAndUpdate(usuarioBso, actualizacion);
-		
+
 	}
 	public void updateEmail(Usuario usuario, String emailNuevo) throws Exception{
 		MongoCollection<Document> usuarios = obtenerUsuarios();
@@ -295,7 +295,44 @@ public void updatePwd(Usuario usuario) throws Exception{
 
 		Document actualizacion= new Document("$set", new Document(email, new BsonString(emailNuevo)));
 		usuarios.findOneAndUpdate(usuarioBso, actualizacion);
-		
+
+	}
+
+	//Codigo de mantenimiento
+	public void crearAcceso(String dni, String sessionKey) {
+		MongoBroker broker = MongoBroker.get();
+		MongoCollection<Document> coleccion = broker.getCollection("Accesos");
+		Document documento = new Document();
+		Document filtro = new Document();
+		filtro.put("_id", dni);
+		Document cambio = new Document();
+		try {
+			if(coleccion.find(filtro) != null) {
+				cambio.put("sessionKey", sessionKey);
+				documento.put("$set", cambio);
+				broker.updateDoc(coleccion, filtro, documento);
+			}
+		}catch(Exception e) {
+			broker.insertDoc(coleccion, documento
+					.append("_id", dni)
+					.append("sessionKey", sessionKey));
+		}
+	}
+
+	public String devolverSessionKey(String dni){
+		MongoBroker broker = MongoBroker.get();
+		MongoCollection<Document> coleccion = broker.getCollection("Accesos");
+		MongoCursor<Document> elementos = coleccion.find().iterator();
+		Document documento = new Document();
+		Document filtro = new Document();
+		filtro.put("_id", dni);
+		Document cambio = new Document();
+		while(elementos.hasNext()) {
+			documento = elementos.next();
+			if(documento.get("_id").toString().equals(dni))
+				return documento.get("sessionKey").toString();
+		}
+		return null;
 	}
 
 }
