@@ -1,8 +1,17 @@
 package com.uclm.equipo02;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -234,6 +243,27 @@ public class AdminController {
 	@RequestMapping(value = "/modificarUsuario", method = RequestMethod.GET)
 	public ModelAndView modificarUsuario() {
 		return new ModelAndView("modificarUsuario");
+	}
+	
+	//Codigo mantenimiento
+	protected String sesionServidor(HttpServletRequest request) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		UsuarioDaoImplement daoAux = new UsuarioDaoImplement();
+		String sessionKey = (String) session.getAttribute("sessionkey");
+		String sessionKeyBBDD = daoAux.devolverSessionKey((String) request.getAttribute("dniUser"));
+		DateFormat horaSistema = new SimpleDateFormat("HH:mm:ss");
+		LocalTime hora = LocalTime.parse((CharSequence) horaSistema);
+		int minutos = (int) ChronoUnit.MINUTES.between((Temporal) session.getAttribute("hora"), hora);
+	    if (!sessionKeyBBDD.equals(sessionKey) || minutos > 30) {
+	    	session.invalidate();
+	    	return null;
+	    }
+	    else {
+	    	session.setAttribute("hora", hora);	
+	    	//Hacer que te devuelva un usuario buscandolo por el token de acceso asociado
+	    }
+		
+		return null;
 	}
 	
 }

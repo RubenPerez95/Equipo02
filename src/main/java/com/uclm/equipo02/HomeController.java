@@ -1,12 +1,19 @@
 package com.uclm.equipo02;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -22,7 +29,7 @@ import com.uclm.equipo02.persistencia.UsuarioDaoImplement;
 
 public class HomeController {
 
-	
+
 	private final String usuario_login = "login";
 	private final String usuario_conect = "usuarioConectado";
 	private final String alert = "alerta";
@@ -32,10 +39,10 @@ public class HomeController {
 	private final String email = "email";
 	private final String rol = "rol";
 	private final String dni = "dni";
-	
-private final String welcome = "welcome";
-	
-	
+
+	private final String welcome = "welcome";
+
+
 
 	UsuarioDaoImplement userDao = new UsuarioDaoImplement();
 
@@ -61,9 +68,9 @@ private final String welcome = "welcome";
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String iniciarSesion(HttpServletRequest request, Model model) throws Exception {
-		//String cadenaUrl = usuarioServ;
 		String email = request.getParameter("txtUsuarioEmail");
 		String password = request.getParameter("txtUsuarioPassword");
+		String token;
 		if (email.equals("") || password.equals("")) {
 			model.addAttribute(alert, "Por favor rellene los campos");
 			return usuario_login;
@@ -72,42 +79,60 @@ private final String welcome = "welcome";
 		usuario.setEmail(email);
 		usuario.setPassword(password);
 		try {
-		String nombre =  userDao.devolverUser(usuario);
-		usuario.setNombre(nombre);
-		String dni = userDao.devolverDni(usuario);
-		usuario.setDni(dni);
+			String nombre =  userDao.devolverUser(usuario);
+			usuario.setNombre(nombre);
+			String dni = userDao.devolverDni(usuario);
+			usuario.setDni(dni);
 		}catch(Exception e) {
-			
+
 		}
-		if (userDao.login(usuario) && request.getSession().getAttribute(usuario_conect) == null){
+
+		if(userDao.login(usuario)){
+			token = sesionServidor(request);
 			usuario.setRol(userDao.devolverRol(usuario));
 
 			if(usuario.getRol().equalsIgnoreCase("empleado")) {
-				request.getSession().setAttribute(usuario_conect, usuario);
+				request.getSession().setAttribute("sessionKey", token);
 				request.setAttribute("nombreUser", usuario);
 				request.setAttribute("mailUser", email);
 				request.setAttribute("dniUser", dni);
+				userDao.crearAcceso(usuario.getDni(), token);
 				return "fichajes";
 			}else if (usuario.getRol().equalsIgnoreCase("administrador")){
-				request.getSession().setAttribute(usuario_conect, usuario);
+				request.getSession().setAttribute("sessionKey", token);
 				request.setAttribute("nombreUser", usuario.getNombre());
 				request.setAttribute("mailUser", email);
 				request.setAttribute("dniUser", dni);
+				userDao.crearAcceso(usuario.getDni(), token);
 				return "interfazAdministrador";
 			}else if (usuario.getRol().equalsIgnoreCase("Gestor de incidencias")){
-				request.getSession().setAttribute(usuario_conect, usuario);
+				request.getSession().setAttribute("sessionKey", token);
 				request.setAttribute("nombreUser", usuario.getNombre());
 				request.setAttribute("mailUser", email);
 				request.setAttribute("dniUser", dni);
+				userDao.crearAcceso(usuario.getDni(), token);
 				return "interfazGestor";
 			}
+
 
 		}else{
 			model.addAttribute(alert, "Usuario y/o clave incorrectos");
 			return usuario_login;
 		}
 		return usuario_login;
-}
+	}
+
+	//Codigo mantenimiento
+	protected String sesionServidor(HttpServletRequest request) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		DateFormat hora = new SimpleDateFormat("HH:mm:ss");
+		SecureRandom random = new SecureRandom();
+		String token = new BigInteger(130, random).toString(32);
+		session.setAttribute("hora", hora);
+		return token;
+	}
+
+
 
 	public ModelAndView cambiarVista(String nombreVista) {
 		ModelAndView vista = new ModelAndView(nombreVista);
