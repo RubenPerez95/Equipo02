@@ -1,5 +1,11 @@
 package com.uclm.equipo02;
 
+import java.io.IOException;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -24,7 +30,14 @@ public class UsuarioController {
 
 	@RequestMapping(value = "/modificarPwd", method = RequestMethod.POST)
 	public String modificarPwd(HttpServletRequest request, Model model) throws Exception {
-		Usuario usuarioLigero = (Usuario) request.getSession().getAttribute(usuario_conect);
+		Usuario usuarioLigero;
+		try {
+			sesionServidor(request);
+			usuarioLigero = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		String emailActual = usuarioLigero.getEmail();
 		
 		String pwdActual = request.getParameter("contrasenaActual");
@@ -87,7 +100,14 @@ public class UsuarioController {
 	@RequestMapping(value = "/REfichajesUser", method = RequestMethod.GET)
 	public ModelAndView REfichajesUser(HttpServletRequest request,Model model) {
 		String returned="";
-		Usuario usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
+		Usuario usuario;
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return new ModelAndView("login");
+		}
 		if(usuario.getRol().equalsIgnoreCase("Empleado")) {
 			returned="fichajes";
 		}else if(usuario.getRol().equalsIgnoreCase("administrador")){
@@ -100,7 +120,26 @@ public class UsuarioController {
 		return new ModelAndView(returned);
 	}
 	
-	
+	//Codigo mantenimiento
+	public void sesionServidor(HttpServletRequest request) throws Exception {
+		HttpSession session = request.getSession();
+		UsuarioDaoImplement daoAux = new UsuarioDaoImplement();
+		String sessionKey = (String) session.getAttribute("sessionKey");
+		LocalTime hora = LocalTime.now();
+		int minutos = (int) ChronoUnit.MINUTES.between((Temporal) session.getAttribute("hora"), hora);
+		if (!daoAux.existeSessionKey(sessionKey) || minutos > 10) {
+			session.invalidate();
+		}
+		session.setAttribute("hora", hora);
+	}
+
+	public Usuario usuarioDeSesion(HttpServletRequest request) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		UsuarioDaoImplement daoAux = new UsuarioDaoImplement();
+		Usuario usuarioSesion = daoAux.usuarioDeSesion((String) session.getAttribute("sessionKey"));
+
+		return usuarioSesion;
+	}
 	
 
 }

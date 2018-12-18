@@ -299,46 +299,56 @@ public class UsuarioDaoImplement{
 	}
 
 	//Codigo de mantenimiento
-	public void crearAcceso(String dni, String sessionKey) {
+
+	public void guardarSessionKey(String dni, String sessionKey) {
 		MongoBroker broker = MongoBroker.get();
 		MongoCollection<Document> coleccion = broker.getCollection("Accesos");
 		Document documento = new Document();
-		documento.append("_id", dni).append("sessionKey", sessionKey);
-		Document documentoCambio = new Document();
-		Document filtro = new Document();
-		Document cambio = new Document();
-		filtro.put("_id", dni);
-		cambio.put("sessionKey", sessionKey);
-		documentoCambio.put("$set", cambio);
-		try {
-			if(coleccion.find(documento) != null) {
-				broker.updateDoc(coleccion, filtro, documentoCambio);
-			}
-			else {
-				broker.insertDoc(coleccion, documento
-						.append("_id", dni)
-						.append("sessionKey", sessionKey));	
-			}
-		}catch(Exception e) {
-			broker.insertDoc(coleccion, documento
-					.append("_id", dni)
-					.append("sessionKey", sessionKey));
-		}
+		broker.insertDoc(coleccion, documento
+				.append("dni", dni)
+				.append("sessionKey", sessionKey));
 	}
 
-	public String devolverSessionKey(String dni){
+	//Mirar busqueda cuando se anaden siempre nuevos documentos
+	public boolean existeSessionKey(String sessionKey){
 		MongoBroker broker = MongoBroker.get();
 		MongoCollection<Document> coleccion = broker.getCollection("Accesos");
 		MongoCursor<Document> elementos = coleccion.find().iterator();
 		Document documento = new Document();
-		Document filtro = new Document();
-		filtro.put("_id", dni);
 		while(elementos.hasNext()) {
 			documento = elementos.next();
-			if(documento.get("_id").toString().equals(dni))
-				return documento.get("sessionKey").toString();
+			if(documento.get("sessionKey").toString().equals(sessionKey))
+				return true;
+		}
+		return false;
+	}
+
+	public Usuario usuarioDeSesion(String sessionKey) {
+		MongoBroker broker = MongoBroker.get();
+		MongoCollection<Document> coleccionAcceso = broker.getCollection("Accesos");
+		MongoCollection<Document> coleccionUsuarios = obtenerUsuarios();
+		MongoCursor<Document> elementosAcceso = coleccionAcceso.find().iterator();
+		MongoCursor<Document> elementosUsuarios = coleccionUsuarios.find().iterator();
+		Document documento = new Document();
+		Document documentoUsuarios = new Document();
+		String dni;
+		while(elementosAcceso.hasNext()) {
+			documento = elementosAcceso.next();
+			if(documento.get("sessionKey").toString().equals(sessionKey)) {
+				dni = documento.getString("dni");
+				while(elementosUsuarios.hasNext()) {
+					documentoUsuarios = elementosUsuarios.next();
+					if(documento.get("dni").toString().equals(dni)) {
+						return new Usuario(
+								documentoUsuarios.getString("nombre"),
+								documentoUsuarios.getString("pwd"),
+								documentoUsuarios.getString("email"),
+								documentoUsuarios.getString("rol"),
+								documentoUsuarios.getString("dni"));
+					}
+				}
+			}		
 		}
 		return null;
 	}
-
 }
