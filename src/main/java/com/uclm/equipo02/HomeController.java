@@ -5,6 +5,9 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.Locale;
 
@@ -88,7 +91,7 @@ public class HomeController {
 		}
 
 		if(userDao.login(usuario)){
-			token = sesionServidor(request);
+			token = establecerToken(request);
 			usuario.setRol(userDao.devolverRol(usuario));
 
 			if(usuario.getRol().equalsIgnoreCase("empleado")) {
@@ -96,21 +99,21 @@ public class HomeController {
 				request.setAttribute("nombreUser", usuario);
 				request.setAttribute("mailUser", email);
 				request.setAttribute("dniUser", dni);
-				userDao.crearAcceso(usuario.getDni(), token);
+				userDao.guardarSessionKey(usuario.getDni(), token);
 				return "fichajes";
 			}else if (usuario.getRol().equalsIgnoreCase("administrador")){
 				request.getSession().setAttribute("sessionKey", token);
 				request.setAttribute("nombreUser", usuario.getNombre());
 				request.setAttribute("mailUser", email);
 				request.setAttribute("dniUser", dni);
-				userDao.crearAcceso(usuario.getDni(), token);
+				userDao.guardarSessionKey(usuario.getDni(), token);
 				return "interfazAdministrador";
 			}else if (usuario.getRol().equalsIgnoreCase("Gestor de incidencias")){
 				request.getSession().setAttribute("sessionKey", token);
 				request.setAttribute("nombreUser", usuario.getNombre());
 				request.setAttribute("mailUser", email);
 				request.setAttribute("dniUser", dni);
-				userDao.crearAcceso(usuario.getDni(), token);
+				userDao.guardarSessionKey(usuario.getDni(), token);
 				return "interfazGestor";
 			}
 
@@ -121,18 +124,6 @@ public class HomeController {
 		}
 		return usuario_login;
 	}
-
-	//Codigo mantenimiento
-	protected String sesionServidor(HttpServletRequest request) throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		DateFormat hora = new SimpleDateFormat("HH:mm:ss");
-		SecureRandom random = new SecureRandom();
-		String token = new BigInteger(130, random).toString(32);
-		session.setAttribute("hora", hora);
-		return token;
-	}
-
-
 
 	public ModelAndView cambiarVista(String nombreVista) {
 		ModelAndView vista = new ModelAndView(nombreVista);
@@ -149,4 +140,16 @@ public class HomeController {
 
 		return cambiarVista(usuario_login);
 	}
+
+	//Codigo mantenimiento
+	protected String establecerToken(HttpServletRequest request) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		LocalTime hora = LocalTime.now();
+		SecureRandom random = new SecureRandom();
+		String token = new BigInteger(130, random).toString(32);
+		session.setAttribute("hora", hora);
+		return token;
+	}
+
+
 }

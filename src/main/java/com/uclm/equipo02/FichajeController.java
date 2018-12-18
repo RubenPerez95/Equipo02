@@ -1,12 +1,20 @@
 package com.uclm.equipo02;
 
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.security.auth.message.callback.PrivateKeyCallback.Request;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.uclm.equipo02.modelo.Fichaje;
 import com.uclm.equipo02.modelo.Usuario;
 import com.uclm.equipo02.persistencia.DAOFichaje;
-
+import com.uclm.equipo02.persistencia.UsuarioDaoImplement;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -46,7 +54,13 @@ public class FichajeController {
 		ObjectId id;
 
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 
 		hora=fichajedao.getCurrentTimeUsingCalendar();
 		fecha=(java.time.LocalDate.now()).toString();
@@ -91,8 +105,14 @@ public class FichajeController {
 	public String cerrarFichajeGeneral(HttpServletRequest request, Model model) throws Exception {
 		Usuario usuario;
 		String returned="";
-		String fecha,horaentrada, idAbiertoString;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
+		String fecha, horaentrada, idAbiertoString;
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		fecha=(java.time.LocalDate.now()).toString();
 		horaentrada=fichajedao.getHoraEntrada(usuario.getDni(),fecha);
 
@@ -137,8 +157,13 @@ public class FichajeController {
 	public String consultaFichajesFechaGeneral(HttpServletRequest request, Model model) {
 		Usuario usuario;
 		String returned="";
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
-
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		String dni = usuario.getDni();
 		String fecha1= request.getParameter("fecha1");
 		String fecha2= request.getParameter("fecha2");
@@ -170,18 +195,19 @@ public class FichajeController {
 		return returned;
 	}
 
-
-
-
-
-
 	/***Redireccion a gestionPwd***/
 
 
 	@RequestMapping(value = "/gestionPwd", method = RequestMethod.GET)
 	public ModelAndView gestionPwd(HttpServletRequest request) {
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect); 
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return new ModelAndView("login");
+		}
 		request.setAttribute("nombreUser", usuario.getNombre());
 		request.setAttribute("mailUser", usuario.getEmail());
 		return new ModelAndView("gestionPwd");
@@ -195,12 +221,36 @@ public class FichajeController {
 	@RequestMapping(value = "/modificarIncidencia", method = RequestMethod.GET)
 	public ModelAndView modificarIncidencia(HttpServletRequest request) {
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect); 
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return new ModelAndView("login");
+		}
 		request.setAttribute("nombreUser", usuario.getNombre());
 		request.setAttribute("dniUser", usuario.getDni());
 		return new ModelAndView("modificarIncidencia");
 	}
 
+	//Codigo mantenimiento
+	public void sesionServidor(HttpServletRequest request) throws Exception {
+		HttpSession session = request.getSession();
+		UsuarioDaoImplement daoAux = new UsuarioDaoImplement();
+		String sessionKey = (String) session.getAttribute("sessionKey");
+		LocalTime hora = LocalTime.now();
+		int minutos = (int) ChronoUnit.MINUTES.between((Temporal) session.getAttribute("hora"), hora);
+		if (!daoAux.existeSessionKey(sessionKey) || minutos > 10) {
+			session.invalidate();
+		}
+		session.setAttribute("hora", hora);
+	}
 
+	public Usuario usuarioDeSesion(HttpServletRequest request) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		UsuarioDaoImplement daoAux = new UsuarioDaoImplement();
+		Usuario usuarioSesion = daoAux.usuarioDeSesion((String) session.getAttribute("sessionKey"));
 
+		return usuarioSesion;
+	}
 }

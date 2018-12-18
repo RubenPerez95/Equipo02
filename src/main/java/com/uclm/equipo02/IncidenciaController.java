@@ -1,8 +1,14 @@
 package com.uclm.equipo02;
 
+import java.io.IOException;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -39,7 +45,13 @@ public class IncidenciaController {
 	public String crearIncidenciaGeneral(HttpServletRequest request, Model model) throws Exception {
 		String returned="";
 		Usuario usuario;
-	    usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 	   
 		String nombreUsuario = usuario.getNombre();
 		String dniUsuario = usuario.getDni();
@@ -89,8 +101,13 @@ public class IncidenciaController {
 		ObjectId id=new ObjectId(idIncidencia);
 		
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
-		
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		
 		Incidencia inci = incidenciaDao.buscarIncidenciaID(id);
 		model.addAttribute("seleccionadaInci", inci); 
@@ -106,7 +123,13 @@ public class IncidenciaController {
 	@RequestMapping(value = "resolverIncidencia", method = RequestMethod.GET)
 	public String resolverIncidencia(HttpServletRequest request, Model model) throws Exception {
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		String texto=request.getParameter("textoGestor");
 		String modo="resolver";
 		
@@ -127,7 +150,13 @@ public class IncidenciaController {
 	@RequestMapping(value = "denegarIncidencia", method = RequestMethod.GET)
 	public String denegarIncidencia(HttpServletRequest request, Model model) throws Exception {
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		String texto=request.getParameter("textoGestor");
 		String modo="denegar";
 		
@@ -147,8 +176,13 @@ public class IncidenciaController {
 	@RequestMapping(value = "listarIncidenciasGestor", method = RequestMethod.GET)
 	public String listarIncidenciasGestor(HttpServletRequest request, Model model) {
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
-
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		String dni = usuario.getDni();
 		String fecha1= request.getParameter("fecha1");
 		String fecha2= request.getParameter("fecha2");
@@ -165,7 +199,13 @@ public class IncidenciaController {
 	@RequestMapping(value = "/listarIncidencias", method = RequestMethod.GET)
 	public String listarIncidencia(HttpServletRequest request, Model model) {
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		request.setAttribute("nombreUser", usuario.getNombre());
 		request.setAttribute("dniUser", usuario.getDni());
 		String dni = usuario.getDni();
@@ -183,7 +223,13 @@ public class IncidenciaController {
 	@RequestMapping(value = "/listarIncidenciasEliminar", method = RequestMethod.GET)
 	public String listarIncidenciaEliminar(HttpServletRequest request, Model model) {
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		request.setAttribute("nombreUser", usuario.getNombre());
 		request.setAttribute("dniUser", usuario.getDni());
 		String dni = usuario.getDni();
@@ -208,8 +254,13 @@ public class IncidenciaController {
 		ObjectId id=new ObjectId(idIncidencia);
 		
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
-		
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		
 		Incidencia inci = incidenciaDao.buscarIncidenciaID(id);
 		model.addAttribute("seleccionadaInci", inci); 
@@ -226,8 +277,13 @@ public class IncidenciaController {
 		ObjectId id=new ObjectId(idIncidencia);
 		
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
-		
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		
 		Incidencia inci = incidenciaDao.buscarIncidenciaID(id);
 		model.addAttribute("seleccionadaInci", inci); 
@@ -242,7 +298,13 @@ public class IncidenciaController {
 		String modo="modificar";
 		String returned="";
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		String categoria = request.getParameter("listaTiposIncidencia");
 		String fecha = request.getParameter("txtFecha");
 		String descripcion = request.getParameter("textoIncidencia");
@@ -279,7 +341,13 @@ public class IncidenciaController {
 	public String eliminarIncidencia(HttpServletRequest request, Model model) {
 		String returned="";
 		Usuario usuario;
-		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
+		try {
+			sesionServidor(request);
+			usuario = usuarioDeSesion(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		String idIncidencia=request.getParameter("idSeleccionada");
 		ObjectId id=new ObjectId(idIncidencia);
 		
@@ -320,4 +388,26 @@ public class IncidenciaController {
 	public ModelAndView REResolverIncidencia() {
 		return new ModelAndView("resolverIncidencia");
 	}
+	
+	//Codigo mantenimiento
+	public void sesionServidor(HttpServletRequest request) throws Exception {
+		HttpSession session = request.getSession();
+		UsuarioDaoImplement daoAux = new UsuarioDaoImplement();
+		String sessionKey = (String) session.getAttribute("sessionKey");
+		LocalTime hora = LocalTime.now();
+		int minutos = (int) ChronoUnit.MINUTES.between((Temporal) session.getAttribute("hora"), hora);
+		if (!daoAux.existeSessionKey(sessionKey) || minutos > 10) {
+			session.invalidate();
+		}
+		session.setAttribute("hora", hora);
+	}
+
+	public Usuario usuarioDeSesion(HttpServletRequest request) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		UsuarioDaoImplement daoAux = new UsuarioDaoImplement();
+		Usuario usuarioSesion = daoAux.usuarioDeSesion((String) session.getAttribute("sessionKey"));
+
+		return usuarioSesion;
+	}
+	
 }

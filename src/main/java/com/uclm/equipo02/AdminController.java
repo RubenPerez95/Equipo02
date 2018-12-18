@@ -42,6 +42,13 @@ public class AdminController {
 	@RequestMapping(value = "/crearUsuario", method = RequestMethod.POST)
 	public String crearUsuario(HttpServletRequest request, Model model) throws Exception {
 
+		try {
+			sesionServidor(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
+
 		String mail = request.getParameter("txtUsuarioEmail");
 		String nombre = request.getParameter("txtUsuarioNombre");
 		String rol = request.getParameter("listaRoles");
@@ -59,11 +66,11 @@ public class AdminController {
 		user.setRol(rol);
 		user.setDni(dni);
 
-		
+
 		try {
 			userDao.insert(user);
 		} catch (Exception e) {
-			
+
 		}
 
 		String asunto = "Password por defecto";
@@ -72,13 +79,20 @@ public class AdminController {
 
 		MailSender mailSender = new MailSender();
 		mailSender.enviarConGMail(mail, asunto, cuerpo);
-		
+
 		model.addAttribute("alerta1", "Se ha creado un usuario satisfactoriamente");
 		return "interfazCrearUsuario";
 	}
 
 	@RequestMapping(value = "/eliminarUsuario", method = RequestMethod.POST)
 	public String eliminarUsuario(HttpServletRequest request, Model model) throws Exception {
+
+		try {
+			sesionServidor(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 
 		String dni = request.getParameter("txtDni");
 
@@ -99,46 +113,60 @@ public class AdminController {
 			return "interfazAdministrador";
 		}
 	}
-	
+
 	@RequestMapping(value = "/buscarUsuarioPorDni", method = RequestMethod.GET)
 	public String buscarUsuario(HttpServletRequest request, Model model) throws Exception {
 
+		try {
+			sesionServidor(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 		String dni = request.getParameter("txtDniBusqueda");
-		
+
+
 		if(!daoadmin.existeUser(dni)) {
 			model.addAttribute("alertaUsuarioNull","El usuario buscado no existe");
 			return "modificarUsuario";
 		}else {
 
-		user.setDni(dni);
-		
-		user.setEmail(userDao.devolverMail(user));
-		user.setNombre(userDao.devolverUser(user));
-		user.setRol(userDao.devolverRol(user));
-		
-		
-		HttpSession session = request.getSession();
-		request.setAttribute("nombreUser", user.getNombre());
-		request.setAttribute("dniUser", user.getDni());
+			user.setDni(dni);
 
-		model.addAttribute("RolUsuario", user.getRol());
-		model.addAttribute("EmailUsuario", user.getEmail());
-		
-		return "modificarUsuario";
+			user.setEmail(userDao.devolverMail(user));
+			user.setNombre(userDao.devolverUser(user));
+			user.setRol(userDao.devolverRol(user));
+
+
+			request.setAttribute("nombreUser", user.getNombre());
+			request.setAttribute("dniUser", user.getDni());
+
+			model.addAttribute("RolUsuario", user.getRol());
+			model.addAttribute("EmailUsuario", user.getEmail());
+
+			return "modificarUsuario";
 		}
 
-		
+
 
 	}
-	
-	
+
+
 	@RequestMapping(value = "/modificarUser", method = RequestMethod.GET)
 	public String modificarUser(HttpServletRequest request, Model model) throws Exception {
+		try {
+			sesionServidor(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
 
 		String rol = request.getParameter("listaRoles");
 		String email = request.getParameter("txtEmail");
+
+
 		try {
-			
+
 			userDao.updateEmail(user, email);
 			userDao.updateRol(user, rol);
 		}catch(Exception e) {
@@ -148,88 +176,91 @@ public class AdminController {
 		return "interfazAdministrador";
 
 	}
-	
-	
+
+
 	@RequestMapping(value = "/adminModificarPwd", method = RequestMethod.POST)
 	public String adminModificarPwd(HttpServletRequest request, Model model) throws Exception {
-		Usuario usuarioLigero = (Usuario) request.getSession().getAttribute(usuario_conect);
-		
+		try {
+			sesionServidor(request);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "login";
+		}
+
 		String dniUsuario = request.getParameter("dniUsuario");
-		
-		
 		String pwdNueva = request.getParameter("contrasenaNueva");
 		String pwdNueva2 = request.getParameter("contrasenaNueva2");
-		
-		
+
+
 		Usuario usuarioBusqueda= new Usuario();
-		
-		
-		
+
+
+
 		if(!daoadmin.existeUser(dniUsuario)) {
 			model.addAttribute("alertaUsuarioNull","El usuario buscado no existe");
 			return adminUpdatePwd;
-			
-		}else {
-		
-		usuarioBusqueda = daoadmin.buscarUsuarioEmail(dniUsuario);
-		
-		
-		String nombre = userDao.devolverUser(usuarioBusqueda);
 
-		Usuario usuario = userDao.selectNombre(nombre);
-		String actualPwd = usuario.getPassword();
-		String dni = usuario.getDni();
-		usuario.setEmail(usuarioBusqueda.getEmail());
-		usuario.setPassword(pwdNueva);
-		
-		
-		if (usuario == null || !(pwdNueva.equals(pwdNueva2))) {
-			request.setAttribute("nombreUserBusqueda", usuario.getNombre());
-			request.setAttribute("mailUser", usuario.getEmail());
-			model.addAttribute(alert, "Datos incorrectos");
-			return adminUpdatePwd;
-		}
-		try {
-	
-		} catch (Exception e) {
-			model.addAttribute(alert, e.getMessage());
-			request.setAttribute("nombreUser", usuario.getNombre());
-			request.setAttribute("mailUser", usuario.getEmail());
-			return adminUpdatePwd;
-		}
-		
-		if(Utilidades.comprobarPwd(dni, actualPwd, pwdNueva)==false){
-			request.setAttribute("nombreUser", usuario.getNombre());
-			request.setAttribute("mailUser", usuario.getEmail());
-			model.addAttribute("alertaPWDRepe","Password anteriormente utilizada");
-			return adminUpdatePwd;
-		}else if(!Utilidades.seguridadPassword(pwdNueva)) {
-			request.setAttribute("nombreUser", usuario.getNombre());
-			request.setAttribute("mailUser", usuario.getEmail());
-			model.addAttribute("alertaPWDinsegura","Password poco segura (minimo 8 caracteres, con numeros y letras)");
-			return adminUpdatePwd;
 		}else {
-			userDao.updatePwd(usuario);
-			HttpSession session = request.getSession();
-			request.setAttribute("usuarioNombre", usuario.getNombre());
-			request.setAttribute("usuarioEmail", usuario.getEmail());
-			session.setAttribute("alertaCambio", "La contrase&ntilde;a ha sido cambiada satisfactoriamente");
-			return adminUpdatePwd;
+
+			usuarioBusqueda = daoadmin.buscarUsuarioEmail(dniUsuario);
+
+
+			String nombre = userDao.devolverUser(usuarioBusqueda);
+
+			Usuario usuario = userDao.selectNombre(nombre);
+			String actualPwd = usuario.getPassword();
+			String dni = usuario.getDni();
+			usuario.setEmail(usuarioBusqueda.getEmail());
+			usuario.setPassword(pwdNueva);
+
+
+			if (usuario == null || !(pwdNueva.equals(pwdNueva2))) {
+				request.setAttribute("nombreUserBusqueda", usuario.getNombre());
+				request.setAttribute("mailUser", usuario.getEmail());
+				model.addAttribute(alert, "Datos incorrectos");
+				return adminUpdatePwd;
+			}
+			try {
+
+			} catch (Exception e) {
+				model.addAttribute(alert, e.getMessage());
+				request.setAttribute("nombreUser", usuario.getNombre());
+				request.setAttribute("mailUser", usuario.getEmail());
+				return adminUpdatePwd;
+			}
+
+			if(Utilidades.comprobarPwd(dni, actualPwd, pwdNueva)==false){
+				request.setAttribute("nombreUser", usuario.getNombre());
+				request.setAttribute("mailUser", usuario.getEmail());
+				model.addAttribute("alertaPWDRepe","Password anteriormente utilizada");
+				return adminUpdatePwd;
+			}else if(!Utilidades.seguridadPassword(pwdNueva)) {
+				request.setAttribute("nombreUser", usuario.getNombre());
+				request.setAttribute("mailUser", usuario.getEmail());
+				model.addAttribute("alertaPWDinsegura","Password poco segura (minimo 8 caracteres, con numeros y letras)");
+				return adminUpdatePwd;
+			}else {
+				userDao.updatePwd(usuario);
+				HttpSession session = request.getSession();
+				request.setAttribute("usuarioNombre", usuario.getNombre());
+				request.setAttribute("usuarioEmail", usuario.getEmail());
+				session.setAttribute("alertaCambio", "La contrase&ntilde;a ha sido cambiada satisfactoriamente");
+				return adminUpdatePwd;
+			}
+
 		}
-		
-		}
-		
+
 	}
-	
+
 	@RequestMapping(value = "/adminUpdatePwd", method = RequestMethod.GET)
 	public ModelAndView interfazFichajesAdmin() {
 		return new ModelAndView("adminUpdatePwd");
-		
+
 	}
 	@RequestMapping(value = "/REfichajesAdminNav", method = RequestMethod.GET)
 	public ModelAndView fichajesAdminNav() {
 		return new ModelAndView("interfazAdministrador");
-		
+
 	}
 
 	@RequestMapping(value = "/interfazCrearUsuario", method = RequestMethod.GET)
@@ -244,26 +275,17 @@ public class AdminController {
 	public ModelAndView modificarUsuario() {
 		return new ModelAndView("modificarUsuario");
 	}
-	
+
 	//Codigo mantenimiento
-	protected String sesionServidor(HttpServletRequest request) throws ServletException, IOException {
+	public void sesionServidor(HttpServletRequest request) throws Exception {
 		HttpSession session = request.getSession();
 		UsuarioDaoImplement daoAux = new UsuarioDaoImplement();
-		String sessionKey = (String) session.getAttribute("sessionkey");
-		String sessionKeyBBDD = daoAux.devolverSessionKey((String) request.getAttribute("dniUser"));
-		DateFormat horaSistema = new SimpleDateFormat("HH:mm:ss");
-		LocalTime hora = LocalTime.parse((CharSequence) horaSistema);
+		String sessionKey = (String) session.getAttribute("sessionKey");
+		LocalTime hora = LocalTime.now();
 		int minutos = (int) ChronoUnit.MINUTES.between((Temporal) session.getAttribute("hora"), hora);
-	    if (!sessionKeyBBDD.equals(sessionKey) || minutos > 30) {
-	    	session.invalidate();
-	    	return null;
-	    }
-	    else {
-	    	session.setAttribute("hora", hora);	
-	    	//Hacer que te devuelva un usuario buscandolo por el token de acceso asociado
-	    }
-		
-		return null;
+		if (!daoAux.existeSessionKey(sessionKey) || minutos > 10) {
+			session.invalidate();
+		}
+		session.setAttribute("hora", hora);
 	}
-	
 }
