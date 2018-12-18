@@ -331,7 +331,6 @@ public class UsuarioDaoImplement{
 		Document documento = new Document();
 		Document filtro = new Document();
 		filtro.put("_id", dni);
-		Document cambio = new Document();
 		while(elementos.hasNext()) {
 			documento = elementos.next();
 			if(documento.get("_id").toString().equals(dni))
