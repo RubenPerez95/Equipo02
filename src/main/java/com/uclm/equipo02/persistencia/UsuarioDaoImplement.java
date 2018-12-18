@@ -312,6 +312,11 @@ public class UsuarioDaoImplement{
 				documento.put("$set", cambio);
 				broker.updateDoc(coleccion, filtro, documento);
 			}
+			else {
+				broker.insertDoc(coleccion, documento
+						.append("_id", dni)
+						.append("sessionKey", sessionKey));	
+			}
 		}catch(Exception e) {
 			broker.insertDoc(coleccion, documento
 					.append("_id", dni)
