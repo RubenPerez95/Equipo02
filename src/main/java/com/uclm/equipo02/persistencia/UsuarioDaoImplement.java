@@ -303,14 +303,16 @@ public class UsuarioDaoImplement{
 		MongoBroker broker = MongoBroker.get();
 		MongoCollection<Document> coleccion = broker.getCollection("Accesos");
 		Document documento = new Document();
+		documento.append("_id", dni).append("sessionKey", sessionKey);
+		Document documentoCambio = new Document();
 		Document filtro = new Document();
-		filtro.put("_id", dni);
 		Document cambio = new Document();
+		filtro.put("_id", dni);
+		cambio.put("sessionKey", sessionKey);
+		documentoCambio.put("$set", cambio);
 		try {
-			if(coleccion.find(filtro) != null) {
-				cambio.put("sessionKey", sessionKey);
-				documento.put("$set", cambio);
-				broker.updateDoc(coleccion, filtro, documento);
+			if(coleccion.find(documento) != null) {
+				broker.updateDoc(coleccion, filtro, documentoCambio);
 			}
 			else {
 				broker.insertDoc(coleccion, documento

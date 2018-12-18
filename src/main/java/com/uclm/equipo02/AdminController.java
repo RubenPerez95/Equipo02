@@ -246,7 +246,7 @@ public class AdminController {
 	}
 	
 	//Codigo mantenimiento
-	protected boolean sesionServidor(HttpServletRequest request) throws ServletException, IOException {
+	protected String sesionServidor(HttpServletRequest request) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		UsuarioDaoImplement daoAux = new UsuarioDaoImplement();
 		String sessionKey = (String) session.getAttribute("sessionkey");
@@ -256,12 +256,14 @@ public class AdminController {
 		int minutos = (int) ChronoUnit.MINUTES.between((Temporal) session.getAttribute("hora"), hora);
 	    if (!sessionKeyBBDD.equals(sessionKey) || minutos > 30) {
 	    	session.invalidate();
-	    	return false;
+	    	return null;
 	    }
-	    else
+	    else {
 	    	session.setAttribute("hora", hora);	
+	    	//Hacer que te devuelva un usuario buscandolo por el token de acceso asociado
+	    }
 		
-		return true;
+		return null;
 	}
 	
 }

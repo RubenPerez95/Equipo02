@@ -30,7 +30,7 @@ public class FichajeController {
 	DAOFichaje fichajedao = new DAOFichaje();
 
 
-	private final String usuario_conect = "nombreUser";
+	private final String usuario_conect = "token";
 	private final String errorMessageAbrir = "errorMessageAbrir";
 	private final String errorMessageCerrar = "errorMessageCerrar";
 	private final String fichajes = "fichajes";
