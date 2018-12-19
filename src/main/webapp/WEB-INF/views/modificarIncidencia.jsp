@@ -166,14 +166,14 @@ textarea {
 			<div class="form-group">
 				<h3>Fecha de Incidencia</h3>
 				<input name="txtFecha" type="text" class="form-control"
-					placeholder="yyyy-MM-dd" data-error="Formato de fecha err&oacute;neo" pattern="([0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" required/ /> 
+					placeholder="yyyy-MM-dd" data-error="Formato de fecha err&oacute;neo" pattern="([0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" required /> 
 					<div class="help-block with-errors"></div>
 					<label>La fecha actual de la incidencia es: ${seleccionadaInci.getFechaCreacion()}</label>
 			</div>
 			<div class="form-group">
 				<h3>Descripción de la incidencia:</h3>
 				<textarea class=textoIncidencia data-error="Campo necesario"  name="textoIncidencia" rows="5"
-					cols="90" > ${seleccionadaInci.getDescripcion()}</textarea>
+					cols="90" required> ${seleccionadaInci.getDescripcion()}</textarea>
 					<div class="help-block with-errors"></div>
 			</div>
       <span

@@ -106,6 +106,7 @@ public  class IncidenciaController {
 	@RequestMapping(value = "resolverIncidencia", method = RequestMethod.GET)
 	public String resolverIncidencia(HttpServletRequest request, Model model) throws Exception {
 		
+		if(!request.getParameter("idSeleccionada").equals("")) {
 		Usuario usuario;
 		usuario = (Usuario) request.getSession().getAttribute(usuario_conect);
 		String texto=request.getParameter("textoGestor");
@@ -122,7 +123,8 @@ public  class IncidenciaController {
 		//Creacion de lista de incidencias de nuevo
 		List<Document> listaIncidenciasGestor =incidenciaDao.getIncidenciasGestor();
 		model.addAttribute("listaIncidencias", listaIncidenciasGestor);
-	System.out.println("holka");
+		model.addAttribute("idSeleccionada",null);
+		}
 		return "resolverIncidencia";
 	}
 	

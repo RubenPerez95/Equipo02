@@ -34,13 +34,15 @@ public class ReslInc {
 		Thread.sleep(1000);
 		
 		driver.findElement(By.name("txtUsuarioEmail")).sendKeys("rafapx2@gmail.com");
-		driver.findElement(By.name("txtUsuarioPassword")).sendKeys("PassRafa88");
+		driver.findElement(By.name("txtUsuarioPassword")).sendKeys("Contrasena1");
 		
 		driver.findElement(By.name("acceso")).click();
 		
 		
 		Thread.sleep(1000);
 	}
+	
+	
     @Test
     public void ResolverIncidenciaEnBlanco() 
     {
@@ -55,9 +57,16 @@ catch(NoSuchElementException excp){
 	fail("salta excepcion");
 	
 };
+assertTrue(estaEnBD());
     }
     
-    @Test
+    
+    
+	
+	
+
+
+	@Test
     public void ResolverIncidenciaEnBlancoMenosElComentario() 
     {
     	IncidenciaController inc=new IncidenciaController();
@@ -78,10 +87,13 @@ catch(NoSuchElementException excp){
     	
     	
     
-    	assertTrue(true);
+    	assertTrue(estaEnBD());
    
     }
-    @Test
+   
+		
+	
+	@Test
     public void ResolverIncidenciaEnBlancoYComentarioConEspacios() 
     {
     	driver.findElement(By.name("resolverIncidencia")).click();
@@ -96,9 +108,10 @@ catch(NoSuchElementException excp){
 	fail("salta excepcion");
 	
 };
-assertTrue(true);	 
+assertTrue(estaEnBD());	 
     }
-    @Test
+    
+	@Test
     public void ResolverIncidenciaRellenaYComentarioConEspacios() 
     {
     	DAOIncidencia inc =new DAOIncidencia();
@@ -113,23 +126,7 @@ assertTrue(true);
     }
     
     
-	@Test
-    public void ResolverIncidenciaRellenaYComentarioConMensaje() 
-    {
-    	DAOIncidencia inc =new DAOIncidencia();
-    	driver.findElement(By.name("resolverIncidencia")).click();
-    	driver.findElement(By.name("seleccionar")).click();
-    	int aleatorio1= (int) (Math.random() * 1000000) + 1;
-    	int aleatorio2= (int) (Math.random() * 1000000) + 1;
-    	String al1=aleatorio1+"";
-    	String al2=aleatorio2+"";
-	    driver.findElement(By.name("textoGestor")).sendKeys(al1+al2);
-    	driver.findElement(By.name("Resolver")).click();
-    	List<Document> lista=inc.getIncs();
-       boolean result= comprobarSiSeModInc(lista,al1+al2);
-    	assertTrue(result);
-    	 
-    }
+	
     
     
 	private boolean comprobarSiSeModInc(List<Document> lista,String comen) {
@@ -140,6 +137,7 @@ assertTrue(true);
 		while(i<lista.size()) {
 			estado=lista.get(i).getString("estado");
 			comentario=lista.get(i).getString("comentarioGestor");
+			System.out.println(estado+" "+comentario);
 			if(estado.equals("Resuelta")&&comentario.equals(comen)) {
 				result=true;
 			}
@@ -163,5 +161,37 @@ assertTrue(true);
 			i++;
 		}
 		return result;
-	} 
-}
+	}
+	@Test
+    public void ResolverIncidenciaRellenaYComentarioConMensaje() throws InterruptedException 
+    {
+    	DAOIncidencia inc =new DAOIncidencia();
+    	driver.findElement(By.name("resolverIncidencia")).click();
+    	driver.findElement(By.name("seleccionar")).click();
+    	int aleatorio1= (int) (Math.random() * 1000000) + 1;
+    	int aleatorio2= (int) (Math.random() * 1000000) + 1;
+    	String al1=aleatorio1+"";
+    	String al2=aleatorio2+"";
+	    driver.findElement(By.name("textoGestor")).sendKeys(al1+al2);
+    	driver.findElement(By.name("Resolver")).click();
+    	Thread.sleep(1000);
+    	List<Document> lista=inc.getIncs();
+       boolean result= comprobarSiSeModInc(lista,al1+al2);
+    	assertTrue(result);
+    	 
+    }
+	private boolean estaEnBD() {
+		DAOIncidencia inc=new DAOIncidencia(); 
+		List<Document> lista=inc.getIncidencias("12345678T");
+		int i=0;
+		String cadena="";
+		boolean result=true;
+		while(i<lista.size()) {
+			
+			if(lista.get(i).getString("dniUsuario").equals(""))result=false;
+			
+		}
+		return result;
+	}
+
+	}

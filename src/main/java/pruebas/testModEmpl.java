@@ -32,11 +32,11 @@ public class testModEmpl {
 		System.setProperty("webdriver.chrome.driver","chromedriver.exe");
 		  driver = new ChromeDriver();
 		  driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-	    driver.get("https://mantenimientoequipo2.herokuapp.com/");
+	    driver.get("http://localhost:8090/equipo02/");
 		Thread.sleep(1000);
 		
 		driver.findElement(By.name("txtUsuarioEmail")).sendKeys("rafapx2@gmail.com");
-		driver.findElement(By.name("txtUsuarioPassword")).sendKeys("PassRafa88");
+		driver.findElement(By.name("txtUsuarioPassword")).sendKeys("Contrasena1");
 		
 		driver.findElement(By.name("acceso")).click();
 		
@@ -46,13 +46,13 @@ public class testModEmpl {
 	@Test
 	public void testModificarUsuarioEnBlanco() {
 		
-
+        String correo="rafapx2@gmail.com";
 		driver.findElement(By.name("modificarUsuario")).click();
-		driver.findElement(By.name("txtUsuarioEmail")).sendKeys("rafapx2@gmail.com");
+		driver.findElement(By.name("txtUsuarioEmail")).sendKeys(correo);
 		driver.findElement(By.name("listaRoles")).sendKeys("Gestor de incidencias");
 		driver.findElement(By.name("Aceptar")).click();
 		
-		assertTrue(UserExiste());
+		assertTrue(UserExiste(correo));
 		
 	}
 	
@@ -74,6 +74,18 @@ public class testModEmpl {
 		
 	}
 	
+	@Test
+	public void testModificarUsuarioEnBlancoCorreoEnBlanco() {
+		
+        String correo="";
+		driver.findElement(By.name("modificarUsuario")).click();
+		driver.findElement(By.name("txtUsuarioEmail")).sendKeys(correo);
+		driver.findElement(By.name("listaRoles")).sendKeys("Gestor de incidencias");
+		driver.findElement(By.name("Aceptar")).click();
+		
+		assertTrue(UserExiste(correo));
+		
+	}
 	
 	
 	
@@ -98,13 +110,13 @@ public class testModEmpl {
 	
 	
 	
-	private boolean UserExiste() {
+	private boolean UserExiste(String cadena) {
 		UsuarioDaoImplement us =new UsuarioDaoImplement();
 		boolean estado=true;
 		List<Usuario> usuarios=us.selectAll();
 		int i=0;
 		while(i<usuarios.size()) { 
-			if(usuarios.get(i).getNombre().equals(""))estado=false;
+			if(usuarios.get(i).getNombre().equals("")&&usuarios.get(i).getNombre().equals(cadena))estado=false;
 		i++;
 		}
 		return estado;
