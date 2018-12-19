@@ -189,7 +189,7 @@ assertTrue(estaEnBD());
 		while(i<lista.size()) {
 			
 			if(lista.get(i).getString("dniUsuario").equals(""))result=false;
-			
+			i++;
 		}
 		return result;
 	}
