@@ -20,7 +20,6 @@ public class testCaseCambiarContrasena {
 	}
 
 	@Test
-	//Cambiar la contrasena introduciendo la contrasena actual correcta y un cambio de contrasena valido
 	public void ContrasenaYCambioCorrecto() throws Exception {
 		//Iniciar sesion
 		driver.get("https://mantenimientoequipo2.herokuapp.com/");
