@@ -162,7 +162,7 @@ public class AdminController {
 		}
 
 		String rol = request.getParameter("listaRoles");
-		String email = request.getParameter("txtEmail");
+		String email = request.getParameter("txtUsuarioEmail");
 
 
 		try {

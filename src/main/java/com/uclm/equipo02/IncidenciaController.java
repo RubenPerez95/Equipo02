@@ -130,6 +130,7 @@ public class IncidenciaController {
 			System.out.println(e.getMessage());
 			return "login";
 		}
+		if(!request.getParameter("idSeleccionada").equals("")) {
 		String texto=request.getParameter("textoGestor");
 		String modo="resolver";
 		
@@ -143,10 +144,10 @@ public class IncidenciaController {
 		//Creacion de lista de incidencias de nuevo
 		List<Document> listaIncidenciasGestor =incidenciaDao.getIncidenciasGestor();
 		model.addAttribute("listaIncidencias", listaIncidenciasGestor);
-	
+		}
 		return "resolverIncidencia";
-	}
 	
+	}
 	@RequestMapping(value = "denegarIncidencia", method = RequestMethod.GET)
 	public String denegarIncidencia(HttpServletRequest request, Model model) throws Exception {
 		Usuario usuario;
