@@ -338,7 +338,7 @@ public class UsuarioDaoImplement{
 				dni = documento.getString("dni");
 				while(elementosUsuarios.hasNext()) {
 					documentoUsuarios = elementosUsuarios.next();
-					if(documento.get("dni").toString().equals(dni)) {
+					if(documentoUsuarios.get("dni").toString().equals(dni)) {
 						return new Usuario(
 								documentoUsuarios.getString("nombre"),
 								documentoUsuarios.getString("pwd"),
