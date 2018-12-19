@@ -396,7 +396,7 @@ public class IncidenciaController {
 		String sessionKey = (String) session.getAttribute("sessionKey");
 		LocalTime hora = LocalTime.now();
 		int minutos = (int) ChronoUnit.MINUTES.between((Temporal) session.getAttribute("hora"), hora);
-		if (!daoAux.existeSessionKey(sessionKey) || minutos > 10) {
+		if (!daoAux.existeSessionKey(sessionKey) || minutos > 1) {
 			session.invalidate();
 		}
 		session.setAttribute("hora", hora);
