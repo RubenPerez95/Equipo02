@@ -98,7 +98,7 @@
 				 	</div>
 				 	<div class="form-group">
 						    <h3>Descripción de la incidencia: </h3>
-                           <textarea class=textoIncidencia data-error="Campo necesario" required name=textoIncidencia rows="10" cols="100" ></textarea>
+                           <textarea class=textoIncidencia data-error="Campo necesario" required name=textoIncidencia rows="10" cols="100" required></textarea>
 					<div class="help-block with-errors"></div>
 					</div>
 						    <div class="botones-form text-right" style="margin: auto;">
